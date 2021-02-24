@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.6.2/aframe/build/aframe-ar.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+    <script>
+        AFRAME.registerComponent('handler', {
+            init: function () {
+                this.toggle = false;
+                this.vid = document.querySelector("#video")
+                this.vid.pause()
+            },
+            tick: function () {
+                if (this.el.object3D.visible == true) {
+                    if (!this.toggle) {
+                        this.toggle = true;
+                        this.vid.play();
+                    }
+                } else {
+                    this.toggle = false;
+                    this.vid.pause();
+                }
+            }
+        });
+
+        AFRAME.registerComponent('change-color-on-click', {
+            schema: {
+                color: { default: 'red' }
+            },
+
+            init: function () {
+                var data = this.data;
+                var el = this.el;  // <a-box>
+                var defaultColor = el.getAttribute('material').color;
+
+                el.addEventListener('mousedown', function () {
+                    el.setAttribute('color', data.color);
+                });
+
+                el.addEventListener('mouseup', function () {
+                    el.setAttribute('color', defaultColor);
+                });
+
+                el.addEventListener('mouseleave', function () {
+                    el.setAttribute('color', defaultColor);
+                });
+            }
+        });
+    </script>
+</head>
+
+<body style='margin: 0; overflow: hidden;'>
+
+    <a-scene embedded arjs='trackingMethod: best;'>
+        <a-camera>
+            <a-cursor></a-cursor>
+        </a-camera>
+
+        <a-assets>
+            <video id="video" src="/asset/【GUNDAM×OWNDAYS】720.mp4" loop="true" crossorigin>
+                <a-image id="image" src="/asset/image/ogp_1200x630.jpg" width="4" height="4" position="0 -0.2 -5">
+                </a-image>
+        </a-assets>
+
+        <a-marker preset="hiro" handler>
+            <a-box position="-3 0.5 -3" rotation="0 0 0" color="#EF2D5E" change-color-on-click="color: blue">
+            </a-box>
+
+            <a-plane position='0 1 -1' scale="2 2 2" width="2" rotation="-90 0 0"
+                material='transparent:true; opacity: 0.9; src:#video'></a-plane>
+            <a-plane position='0 1 -3.5' scale="2 2 2" width="2" rotation="-90 0 0"
+                material='transparent:true; opacity: 0.9; src:#image'></a-plane>
+        </a-marker>
+
+    </a-scene>
+
+</body>
+
+</html>
